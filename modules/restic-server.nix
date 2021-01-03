@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
+  inherit (lib) listToAttrs mkForce nameValuePair;
+
   resticRepo = "/mnt/backup/restic_repo";
   resticOffsiteRepo = "rclone:onedrive:backup";
 in {
@@ -23,7 +25,7 @@ in {
 
   # Workaround for letting rclone write temp files next to rclone.conf secret
   users.extraUsers.restic = {
-    home = lib.mkForce "/var/tmp/restic-home";
+    home = mkForce "/var/tmp/restic-home";
     createHome = true;
   };
 
@@ -57,13 +59,16 @@ in {
       User = "restic";
       SupplementaryGroups = config.users.groups.keys.name;
     };
-    # timerConfig = {
-    #   OnCalendar = ""; # TODO
-    #   RandomizedDelaySec = "1h";
-    # };
   };
-
-  # TODO define prune service
+  # Run every Sunday at about noon
+  systemd.timers.restic-copy-offsite = {
+    timerConfig = {
+      OnCalendar = "Sunday 12:00";
+      RandomizedDelaySec = "1h";
+      Persistent = true; # Start at next reboot if timer was missed
+    };
+    wantedBy = [ "timers.target" ];
+  };
 
   # TODO define offsite prune service
 }
