@@ -19,9 +19,9 @@
   # Allow TCP access to restic server port
   networking.firewall.allowedTCPPorts = [ 6053 ];
 
-  # TODO define prune service
-
   # TODO define copy restic offsite service
+
+  # TODO define prune service
 
   # TODO define offsite prune service
 }
