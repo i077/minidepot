@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   resticRepo = "/mnt/backup/restic_repo";
@@ -11,14 +11,20 @@ in {
   };
 
   # Declare sops secrets
-  sops.secrets.restic-onsite-pass = {
-    owner = "restic";
+  sops.secrets = {
+    restic-onsite-pass = { owner = "restic"; };
+    restic-offsite-pass = { owner = "restic"; };
+    rclone-config = {
+      owner = "restic";
+      # rclone needs write access to the residing directory
+      path = "/var/tmp/restic-home/rclone.conf";
+    };
   };
-  sops.secrets.restic-offsite-pass = {
-    owner = "restic";
-  };
-  sops.secrets.rclone-config = {
-    owner = "restic";
+
+  # Workaround for letting rclone write temp files next to rclone.conf secret
+  users.extraUsers.restic = {
+    home = lib.mkForce "/var/tmp/restic-home";
+    createHome = true;
   };
 
   services.restic.server = {
