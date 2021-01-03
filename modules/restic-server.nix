@@ -22,6 +22,16 @@ let
     User = "restic";
     SupplementaryGroups = config.users.groups.keys.name;
   };
+
+  # Base systemd timer config for restic services
+  resticTimerWithCalendar = cal: {
+    timerConfig = {
+      OnCalendar = cal;
+      RandomizedDelaySec = "1h";
+      Persistent = true; # Start at next reboot if timer was missed
+    };
+    wantedBy = [ "timers.target" ];
+  };
 in {
   # Mount backup drive
   fileSystems."/mnt/backup" = {
@@ -72,15 +82,8 @@ in {
     restartIfChanged = false;
     serviceConfig = resticServiceWithCmd "${pkgs.restic}/bin/restic copy";
   };
-  # Run every Sunday at about noon
-  systemd.timers.restic-copy-offsite = {
-    timerConfig = {
-      OnCalendar = "Sunday 12:00";
-      RandomizedDelaySec = "1h";
-      Persistent = true; # Start at next reboot if timer was missed
-    };
-    wantedBy = [ "timers.target" ];
-  };
+  # Run every Sunday at about 4AM
+  systemd.timers.restic-copy-offsite = resticTimerWithCalendar "Sunday 04:00";
 
   # Service to prune onsite respository
   systemd.services.restic-prune-onsite = {
@@ -91,6 +94,19 @@ in {
     restartIfChanged = false;
     serviceConfig = resticServiceWithCmd pruneCmd;
   };
+  # Run on the 1st and 16th of every month around 4AM
+  systemd.timers.restic-prune-onsite = resticTimerWithCalendar "*-*-01,16 04:00";
 
-  # TODO define offsite prune service
+  # Service to prune offsite respository
+  systemd.services.restic-prune-offsite = {
+    environment = {
+      RESTIC_PASSWORD_FILE = config.sops.secrets.restic-offsite-pass.path;
+      RESTIC_REPOSITORY = resticOffsiteRepo;
+      RCLONE_CONFIG = config.sops.secrets.rclone-config.path;
+    };
+    restartIfChanged = false;
+    serviceConfig = resticServiceWithCmd pruneCmd;
+  };
+  # Run on the 1st and 16th of every month around 4AM
+  systemd.timers.restic-prune-offsite = resticTimerWithCalendar "*-*-01,16 04:00";
 }
