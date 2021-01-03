@@ -1,10 +1,27 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) listToAttrs mkForce nameValuePair;
+  inherit (lib) concatStringsSep listToAttrs mkForce nameValuePair;
 
   resticRepo = "/mnt/backup/restic_repo";
   resticOffsiteRepo = "rclone:onedrive:backup";
+
+  # Arguments for many of each snapshot type to keep
+  pruneOpts = concatStringsSep " " [
+    "--keep-daily 28"
+    "--keep-weekly 16"
+    "--keep-monthly 18"
+    "--keep-yearly 10"
+  ];
+  pruneCmd = "${pkgs.restic}/bin/restic forget --prune ${pruneOpts}";
+
+  # Base serviceConfig for restic services
+  resticServiceWithCmd = cmd: {
+    Type = "oneshot";
+    ExecStart = cmd;
+    User = "restic";
+    SupplementaryGroups = config.users.groups.keys.name;
+  };
 in {
   # Mount backup drive
   fileSystems."/mnt/backup" = {
@@ -53,12 +70,7 @@ in {
       RCLONE_CONFIG = config.sops.secrets.rclone-config.path;
     };
     restartIfChanged = false;
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.restic}/bin/restic copy";
-      User = "restic";
-      SupplementaryGroups = config.users.groups.keys.name;
-    };
+    serviceConfig = resticServiceWithCmd "${pkgs.restic}/bin/restic copy";
   };
   # Run every Sunday at about noon
   systemd.timers.restic-copy-offsite = {
@@ -68,6 +80,16 @@ in {
       Persistent = true; # Start at next reboot if timer was missed
     };
     wantedBy = [ "timers.target" ];
+  };
+
+  # Service to prune onsite respository
+  systemd.services.restic-prune-onsite = {
+    environment = {
+      RESTIC_PASSWORD_FILE = config.sops.secrets.restic-onsite-pass.path;
+      RESTIC_REPOSITORY = resticRepo;
+    };
+    restartIfChanged = false;
+    serviceConfig = resticServiceWithCmd pruneCmd;
   };
 
   # TODO define offsite prune service
