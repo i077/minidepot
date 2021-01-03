@@ -28,18 +28,21 @@
   users.users = {
     root = {
       hashedPassword =
-        "$6$90j83ybRsVCZn$/X3kl0UTMetLagKxu8OC/.eShNAogJsFZ3idoVInW7N6MjV.1yDKZPDjsasRb87IzFkkNbzTho7q./MQzGFRN0";
+        "$6$XXn8k2FP$L9QLgzqNCzgYUMo/0gRY6Xo2l19ZQNGxoAehZ.T8C33bFi3DUNwikyR.dD4pZtpjN2TUa6AZse1Zf4sY1WiwM/";
     };
 
     minisilo = {
       isNormalUser = true;
-      hashedPassword = "";
+      hashedPassword =
+        "$6$xfohTi0lIuOTH$b6lJ/EVAKNYpL2utymuYWFg/ziaA2tHTYlvWY3hfjXJV8qbRuaOH1Gm64.B/MS/KPVilHKR0fBq.249ar.wlB.";
       extraGroups = [ "wheel" ];
       openssh.authorizedKeys.keys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU6iRY3yHvhu1GeQg7AdLOsYEIpqNE2ik9u/kmHA+TmX6PsqtfGyNpiS+fEgTd8ZrFetFhUR5wmJazVw7Xjjt+K8JkXl1mUvXzbfat8AoONnr7f6cqH8+B022g7Nb3hh4/4mhCP+jIjZ9T22bIhzJGTaH18yf/L8zJK7baOpJv2jPpEyNbl4mj5AWXtYXq8tt2LHG1yiNT9HDHFHUx+XZZY2npIieiyuFNieClIkxzIyQw1j5M0D7lstz3Mqe5KyhoBZRVXSI4njCzl3YL0JQHbT3qD+9SAaq/nlWizaMM5056pdRrgqmEWyDGdrdgPzt0240NKLlxKRsplqUFeM7z imran@giratina"
       ];
     };
   };
+
+  nix.trustedUsers = [ "@wheel" ];
 
   system.stateVersion = "20.09";
 }
