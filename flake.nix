@@ -13,6 +13,7 @@
         ./modules/base.nix
         ./modules/hardware-configuration.nix
         ./modules/restic-server.nix
+        ./modules/sshd.nix
       ];
     };
   };
