@@ -15,6 +15,12 @@
     kernelPackages = pkgs.linuxPackages_rpi4;
   };
 
+  # Add 2GB swap
+  swapDevices = [{
+    device = "/var/swapfile";
+    size = 2048;
+  }];
+
   # Networking -- I only use Ethernet, no wireless here
   networking.hostName = "minidepot";
   networking.interfaces.eth0.useDHCP = true;
