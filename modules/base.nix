@@ -16,7 +16,7 @@
   };
 
   # Networking -- I only use Ethernet, no wireless here
-  networking.hostName = "minisilo";
+  networking.hostName = "minidepot";
   networking.interfaces.eth0.useDHCP = true;
 
   # If wireless is needed, uncomment this
@@ -31,7 +31,7 @@
         "$6$XXn8k2FP$L9QLgzqNCzgYUMo/0gRY6Xo2l19ZQNGxoAehZ.T8C33bFi3DUNwikyR.dD4pZtpjN2TUa6AZse1Zf4sY1WiwM/";
     };
 
-    minisilo = {
+    minidepot = {
       isNormalUser = true;
       hashedPassword =
         "$6$xfohTi0lIuOTH$b6lJ/EVAKNYpL2utymuYWFg/ziaA2tHTYlvWY3hfjXJV8qbRuaOH1Gm64.B/MS/KPVilHKR0fBq.249ar.wlB.";

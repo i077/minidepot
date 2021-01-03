@@ -7,7 +7,7 @@
   };
 
   outputs = { self, nixpkgs, ... }: {
-    nixosConfigurations.minisilo = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.minidepot = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules = [
         ./modules/base.nix
