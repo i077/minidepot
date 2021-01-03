@@ -47,5 +47,8 @@
 
   nix.trustedUsers = [ "@wheel" ];
 
+  # SOPS secrets management
+  sops.defaultSopsFile = ../secrets/secrets.yaml;
+
   system.stateVersion = "20.09";
 }

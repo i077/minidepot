@@ -5,7 +5,7 @@
     # Raspi 4 kernel is only on nixos-unstable
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    sops-nix.url = github:Mic92/sops-nix;
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   outputs = { self, nixpkgs, sops-nix, ... }:
@@ -23,6 +23,7 @@
       nixosConfigurations.minidepot = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
+          sops-nix.nixosModules.sops
           ./modules/base.nix
           ./modules/hardware-configuration.nix
           ./modules/restic-server.nix
@@ -30,12 +31,14 @@
         ];
       };
 
-      devShell = forAllSystems (system: let pkgs = nixpkgsFor.${system}; in pkgs.mkShell {
-        sopsPGPKeyDirs = [ "./secrets/keys/hosts" "./secrets/keys/users" ];
+      devShell = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system};
+        in pkgs.mkShell {
+          sopsPGPKeyDirs = [ "./secrets/pubkeys/hosts" "./secrets/pubkeys/users" ];
 
-        nativeBuildInputs = [
-          sops-nix.packages.${system}.sops-pgp-hook
-        ];
-      });
+          nativeBuildInputs = [ sops-nix.packages.${system}.sops-pgp-hook ];
+
+          buildInputs = with pkgs; [ sops ];
+        });
     };
 }
