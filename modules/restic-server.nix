@@ -16,6 +16,9 @@
     extraFlags = [ "--no-auth" ]; # No need for HTTP authentication for now
   };
 
+  # Allow TCP access to restic server port
+  networking.firewall.allowedTCPPorts = [ 6053 ];
+
   # TODO define prune service
 
   # TODO define copy restic offsite service
