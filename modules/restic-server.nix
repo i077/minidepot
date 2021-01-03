@@ -13,6 +13,7 @@
     appendOnly = true; # Prunes are done server-side, clients only add snapshots
     listenAddress = ":6053";
     prometheus = true;
+    extraFlags = [ "--no-auth" ]; # No need for HTTP authentication for now
   };
 
   # TODO define prune service
