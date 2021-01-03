@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   resticRepo = "/mnt/backup/restic_repo";
@@ -11,8 +11,15 @@ in {
   };
 
   # Declare sops secrets
-  sops.secrets.restic-onsite-pass = {};
-  sops.secrets.restic-offsite-pass = {};
+  sops.secrets.restic-onsite-pass = {
+    owner = "restic";
+  };
+  sops.secrets.restic-offsite-pass = {
+    owner = "restic";
+  };
+  sops.secrets.rclone-config = {
+    owner = "restic";
+  };
 
   services.restic.server = {
     enable = true;
@@ -26,12 +33,28 @@ in {
   # Allow TCP access to restic server port
   networking.firewall.allowedTCPPorts = [ 6053 ];
 
-  # TODO define copy restic offsite service
+  # Service to copy backup snapshots offsite
   systemd.services.restic-copy-offsite = {
     environment = {
-      RESTIC_PASSWORD_FILE = null; # TODO
+      RESTIC_PASSWORD_FILE = config.sops.secrets.restic-onsite-pass.path;
       RESTIC_REPOSITORY = resticRepo;
+
+      RESTIC_PASSWORD_FILE2 = config.sops.secrets.restic-offsite-pass.path;
+      RESTIC_REPOSITORY2 = resticOffsiteRepo;
+
+      RCLONE_CONFIG = config.sops.secrets.rclone-config.path;
     };
+    restartIfChanged = false;
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.restic}/bin/restic copy";
+      User = "restic";
+      SupplementaryGroups = config.users.groups.keys.name;
+    };
+    # timerConfig = {
+    #   OnCalendar = ""; # TODO
+    #   RandomizedDelaySec = "1h";
+    # };
   };
 
   # TODO define prune service
