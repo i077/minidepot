@@ -34,7 +34,7 @@
   users.users = {
     root = {
       hashedPassword =
-        "$6$XXn8k2FP$L9QLgzqNCzgYUMo/0gRY6Xo2l19ZQNGxoAehZ.T8C33bFi3DUNwikyR.dD4pZtpjN2TUa6AZse1Zf4sY1WiwM/";
+        "$6$lAAHWHKiwDlnOh7j$CbaK9HYEN0u9Or/74P8UlppCHk0R9/9RQD/rLXc5TdiXCA1zeTouOnF9Uoay0Z5RrqSYSWxcLSBToWFNIj0590";
     };
 
     minidepot = {
