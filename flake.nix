@@ -24,10 +24,12 @@
         system = "aarch64-linux";
         modules = [
           sops-nix.nixosModules.sops
+
           ./modules/base.nix
           ./modules/hardware-configuration.nix
           ./modules/restic-server.nix
           ./modules/sshd.nix
+          ./modules/dyndns.nix
         ];
       };
 
