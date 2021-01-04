@@ -20,7 +20,7 @@ let
     Type = "oneshot";
     ExecStart = cmd;
     User = "restic";
-    SupplementaryGroups = config.users.groups.keys.name;
+    SupplementaryGroups = [ config.users.groups.keys.name ];
   };
 
   # Base systemd timer config for restic services
@@ -48,6 +48,10 @@ in {
       # rclone needs write access to the residing directory
       path = "/var/tmp/restic-home/rclone.conf";
     };
+
+    # SSL certificate
+    https-privkey = { owner = "restic"; };
+    https-cert = { owner = "restic"; };
   };
 
   # Workaround for letting rclone write temp files next to rclone.conf secret
@@ -61,9 +65,19 @@ in {
     dataDir = resticRepo;
     appendOnly = true; # Prunes are done server-side, clients only add snapshots
     listenAddress = ":6053";
-    prometheus = true;
-    extraFlags = [ "--no-auth" ]; # No need for HTTP authentication for now
+    extraFlags = [
+      # No need for HTTP authenticatio for now
+      "--no-auth"
+      # Use HTTPS
+      "--tls"
+      "--tls-cert"
+      "${config.sops.secrets.https-cert.path}"
+      "--tls-key"
+      "${config.sops.secrets.https-privkey.path}"
+    ];
   };
+  systemd.services.restic-rest-server.serviceConfig.SupplementaryGroups =
+    [ config.users.groups.keys.name ];
 
   # Allow TCP access to restic server port
   networking.firewall.allowedTCPPorts = [ 6053 ];
