@@ -29,6 +29,7 @@
           ./modules/hardware-configuration.nix
           ./modules/restic-server.nix
           ./modules/sshd.nix
+          ./modules/ssl.nix
           ./modules/dyndns.nix
         ];
       };
