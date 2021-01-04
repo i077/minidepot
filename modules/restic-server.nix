@@ -32,6 +32,8 @@ let
     };
     wantedBy = [ "timers.target" ];
   };
+
+  sslCertDir = config.security.acme.certs."minidepot.imranh.xyz".directory;
 in {
   # Mount backup drive
   fileSystems."/mnt/backup" = {
@@ -48,16 +50,13 @@ in {
       # rclone needs write access to the residing directory
       path = "/var/tmp/restic-home/rclone.conf";
     };
-
-    # SSL certificate
-    https-privkey = { owner = "restic"; };
-    https-cert = { owner = "restic"; };
   };
 
   # Workaround for letting rclone write temp files next to rclone.conf secret
   users.extraUsers.restic = {
     home = mkForce "/var/tmp/restic-home";
     createHome = true;
+    extraGroups = [ "acme" ];
   };
 
   services.restic.server = {
@@ -71,9 +70,9 @@ in {
       # Use HTTPS
       "--tls"
       "--tls-cert"
-      "${config.sops.secrets.https-cert.path}"
+      "${sslCertDir}/cert.pem"
       "--tls-key"
-      "${config.sops.secrets.https-privkey.path}"
+      "${sslCertDir}/key.pem"
     ];
   };
   systemd.services.restic-rest-server.serviceConfig.SupplementaryGroups =
@@ -84,6 +83,7 @@ in {
 
   # Service to copy backup snapshots offsite
   systemd.services.restic-copy-offsite = {
+    after = [ "network.target" ];
     environment = {
       RESTIC_PASSWORD_FILE = config.sops.secrets.restic-onsite-pass.path;
       RESTIC_REPOSITORY = resticRepo;
@@ -113,6 +113,7 @@ in {
 
   # Service to prune offsite respository
   systemd.services.restic-prune-offsite = {
+    after = [ "network.target" ];
     environment = {
       RESTIC_PASSWORD_FILE = config.sops.secrets.restic-offsite-pass.path;
       RESTIC_REPOSITORY = resticOffsiteRepo;
