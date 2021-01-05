@@ -8,13 +8,16 @@ in {
   services.openssh = {
     enable = true;
     ports = [ 2222 ];
+    passwordAuthentication = false;
+    permitRootLogin = "no";
   };
 
   users.users = {
-    root.openssh.authorizedKeys.keys = sshPublicKeys;
     minidepot.openssh.authorizedKeys.keys = sshPublicKeys;
   };
 
   # Add mosh for unreliable connections
   programs.mosh.enable = true;
+
+  services.fail2ban.enable = true;
 }

@@ -46,6 +46,7 @@
   };
 
   nix.trustedUsers = [ "@wheel" ];
+  security.sudo.wheelNeedsPassword = false;
 
   # SOPS secrets management
   sops.defaultSopsFile = ../secrets/secrets.yaml;
