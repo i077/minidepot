@@ -96,8 +96,8 @@ in {
     restartIfChanged = false;
     serviceConfig = resticServiceWithCmd "${pkgs.restic}/bin/restic copy";
   };
-  # Run every Sunday at about 4AM
-  systemd.timers.restic-copy-offsite = resticTimerWithCalendar "Sunday 04:00";
+  # Run every day at about 4AM
+  systemd.timers.restic-copy-offsite = resticTimerWithCalendar "04:00";
 
   # Service to prune onsite respository
   systemd.services.restic-prune-onsite = {
@@ -109,7 +109,7 @@ in {
     serviceConfig = resticServiceWithCmd pruneCmd;
   };
   # Run on the 1st and 16th of every month around 4AM
-  systemd.timers.restic-prune-onsite = resticTimerWithCalendar "*-*-01,16 04:00";
+  systemd.timers.restic-prune-onsite = resticTimerWithCalendar "*-*-01,16 06:00";
 
   # Service to prune offsite respository
   systemd.services.restic-prune-offsite = {
@@ -123,5 +123,5 @@ in {
     serviceConfig = resticServiceWithCmd pruneCmd;
   };
   # Run on the 1st and 16th of every month around 4AM
-  systemd.timers.restic-prune-offsite = resticTimerWithCalendar "*-*-01,16 04:00";
+  systemd.timers.restic-prune-offsite = resticTimerWithCalendar "*-*-01,16 06:00";
 }

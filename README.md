@@ -10,7 +10,7 @@ A short list of features:
 
 - A [Restic](https://github.com/restic/restic) [REST server](https://github.com/restic/rest-server)
   backend for encrypted, deduplicated, incremental backups.
-- Systemd services to automatically copy backup snapshots to an offsite source once a week,
+- Systemd services to automatically copy backup snapshots to an offsite source every day,
   as well as prune both local and offsite sources according to a set retention policy twice a month -- almost no
   manual maintenance required.
 - Dynamic DNS client that updates a DNS record in CloudFlare to with its IP address -- so
