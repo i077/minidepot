@@ -48,6 +48,12 @@
   nix.trustedUsers = [ "@wheel" ];
   security.sudo.wheelNeedsPassword = false;
 
+  # Use nix flakes for local flake evaluation
+  nix.package = pkgs.nixFlakes;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
+
   # SOPS secrets management
   sops.defaultSopsFile = ../secrets/secrets.yaml;
 
