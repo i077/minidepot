@@ -8,6 +8,7 @@ let
 
   # Arguments for many of each snapshot type to keep
   pruneOpts = concatStringsSep " " [
+    "--keep-hourly 24"
     "--keep-daily 28"
     "--keep-weekly 16"
     "--keep-monthly 18"
