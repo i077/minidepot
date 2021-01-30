@@ -7,7 +7,7 @@ let
 in {
   services.openssh = {
     enable = true;
-    ports = [ 2222 ];
+    ports = [ 2255 ];
     passwordAuthentication = false;
     permitRootLogin = "no";
   };
