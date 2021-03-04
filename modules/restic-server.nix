@@ -49,13 +49,13 @@ in {
     rclone-config = {
       owner = "restic";
       # rclone needs write access to the residing directory
-      path = "/var/tmp/restic-home/rclone.conf";
+      path = "/etc/restic-home/rclone.conf";
     };
   };
 
   # Workaround for letting rclone write temp files next to rclone.conf secret
   users.extraUsers.restic = {
-    home = mkForce "/var/tmp/restic-home";
+    home = mkForce "/etc/restic-home";
     createHome = true;
     extraGroups = [ "acme" ];
   };
