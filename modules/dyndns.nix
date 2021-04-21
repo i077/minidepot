@@ -15,6 +15,7 @@ in {
   users.users.${serviceUser} = {
     home = "/var/empty";
     extraGroups = [ config.users.groups.keys.name ];
+    isSystemUser = true;
   };
 
   # Much of this is taken from the cfdyndns module from nixpkgs
